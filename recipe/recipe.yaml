@@ -1,11 +1,12 @@
-{% set version = "4.2.2" %}
+context:
+  version: "4.2.2"
 
 package:
   name: libcuba
-  version: {{ version }}
+  version: ${{ version }}
 
 source:
-  url: https://feynarts.de/cuba/Cuba-{{ version }}.tar.gz
+  url: https://feynarts.de/cuba/Cuba-${{ version }}.tar.gz
   sha256: 8d9f532fd2b9561da2272c156ef7be5f3960953e4519c638759f1b52fe03ed52
 
   # from https://github.com/jschueller/cuba.git, author did not respond yet
@@ -16,26 +17,29 @@ source:
     - 0005-Hardlink-KorobovCoeff.c.patch
 
 build:
-  number: 1
-  run_exports:
-    - {{ pin_subpackage('libcuba', max_pin='x.x') }}
+  number: 2
 
 requirements:
   build:
-    - {{ compiler('c') }}
-    - {{ stdlib('c') }}
+    - ${{ compiler('c') }}
+    - ${{ stdlib('c') }}
     - cmake
     - ninja
+  run_exports:
+    - ${{ pin_subpackage('libcuba', upper_bound='x.x') }}
 
-test:
-  commands:
-    - test -f ${PREFIX}/include/cuba.h  # [unix]
-    - test -f ${PREFIX}/lib/libcuba${SHLIB_EXT}  # [unix]
-    - if not exist %PREFIX%\\Library\\include\\cuba.h exit 1  # [win]
-    - if not exist %PREFIX%\\Library\\lib\\cuba.lib exit 1  # [win]
+tests:
+  - script:
+    - if: unix
+      then:
+        - test -f ${PREFIX}/include/cuba.h
+        - test -f ${PREFIX}/lib/libcuba${SHLIB_EXT}
+      else:
+        - if not exist %PREFIX%\\Library\\include\\cuba.h exit 1
+        - if not exist %PREFIX%\\Library\\lib\\cuba.lib exit 1
 
 about:
-  home: "https://feynarts.de/cuba/"
+  homepage: "https://feynarts.de/cuba/"
   license: LGPL-3.0-only
   license_family: LGPL
   license_file: COPYING
