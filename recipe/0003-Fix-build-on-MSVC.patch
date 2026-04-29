@@ -1,7 +1,7 @@
-From a8a09843fc0e9d6c84f391181c1abc1b523c788c Mon Sep 17 00:00:00 2001
+From 33fde9b66c97ddb4ad402c5895e2487b57b46a72 Mon Sep 17 00:00:00 2001
 From: Julien Schueller <schueller@phimeca.com>
 Date: Fri, 16 Feb 2024 21:53:25 +0100
-Subject: [PATCH 3/5] Fix build on MSVC
+Subject: [PATCH 3/6] Fix build on MSVC
 
 ---
  src/common/stddecl.h  | 23 ++++++++++++++++++++++-
@@ -91,5 +91,5 @@ index bb1bae7..acd5808 100644
      for( ; nsamples > 0; nsamples -= t->nbatch ) {
        cnumber n = IMin(t->nbatch, nsamples);
 -- 
-2.44.0
+2.43.0
 

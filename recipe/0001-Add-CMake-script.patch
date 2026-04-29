@@ -1,22 +1,22 @@
-From b3cac05e7796e642cca63d9b661262f94356529d Mon Sep 17 00:00:00 2001
+From c93334518e83b95e910d374dbfb836029806fa1d Mon Sep 17 00:00:00 2001
 From: Julien Schueller <schueller@phimeca.com>
 Date: Fri, 16 Feb 2024 18:13:02 +0100
-Subject: [PATCH 1/5] Add CMake script
+Subject: [PATCH 1/6] Add CMake script
 
 ---
- CMakeLists.txt       | 65 ++++++++++++++++++++++++++++++++++++++++++++
- config.h.cmake.in    | 16 +++++++++++
- src/common/stddecl.h |  5 ++++
- 3 files changed, 86 insertions(+)
+ CMakeLists.txt       | 74 ++++++++++++++++++++++++++++++++++++++++++++
+ config.h.cmake.in    | 16 ++++++++++
+ src/common/stddecl.h |  5 +++
+ 3 files changed, 95 insertions(+)
  create mode 100644 CMakeLists.txt
  create mode 100644 config.h.cmake.in
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..dd43330
+index 0000000..1821314
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,65 @@
+@@ -0,0 +1,74 @@
 +cmake_minimum_required (VERSION 3.13)
 +
 +set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type")
@@ -24,7 +24,7 @@ index 0000000..dd43330
 +project (cuba C)
 +
 +option (BUILD_SHARED_LIBS "shared/static" ON)
-+option (ENABLE_FORK "sampling parallelization using fork syscall" ON)
++option (ENABLE_FORK "sampling parallelization using fork syscall" OFF)
 +
 +include (GNUInstallDirs)
 +
@@ -40,7 +40,11 @@ index 0000000..dd43330
 +endif ()
 +check_function_exists (shmget HAVE_SHMGET)
 +if (UNIX)
-+  set(CMAKE_REQUIRED_LIBRARIES m)
++  find_library(MATH_LIBRARY NAMES m)
++endif ()
++
++if (MATH_LIBRARY)
++  set(CMAKE_REQUIRED_LIBRARIES ${MATH_LIBRARY})
 +endif ()
 +check_function_exists(erf HAVE_ERF)
 +check_function_exists(powl HAVE_POWL)
@@ -54,8 +58,13 @@ index 0000000..dd43330
 +add_library(cuba src/common/Fork.c src/common/Global.c src/common/Data.c)
 +target_include_directories(cuba PRIVATE src/common ${CMAKE_CURRENT_BINARY_DIR})
 +target_compile_definitions(cuba PRIVATE HAVE_CONFIG_H NOUNDERSCORE REALSIZE=8)
++if (MATH_LIBRARY)
++  target_link_libraries(cuba PRIVATE ${MATH_LIBRARY})
++endif ()
++
 +set_property(TARGET cuba PROPERTY POSITION_INDEPENDENT_CODE ON)
 +set_property(TARGET cuba PROPERTY WINDOWS_EXPORT_ALL_SYMBOLS ON)
++set_property(TARGET cuba PROPERTY SOVERSION 0)
 +
 +set(VARIANTS Vegas Suave Cuhre Divonne)
 +foreach(VARIANT ${VARIANTS})
@@ -121,5 +130,5 @@ index 7ff4f73..6d279fc 100644
  #include <stdlib.h>
  #include <string.h>
 -- 
-2.44.0
+2.43.0
 

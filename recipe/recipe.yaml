@@ -12,12 +12,12 @@ source:
   # from https://github.com/jschueller/cuba.git, author did not respond yet
   patches:
     - 0001-Add-CMake-script.patch
-    - 0002-Fix-build-on-MinGW.patch
+    - 0002-Fix-build-without-fork.patch 
     - 0003-Fix-build-on-MSVC.patch
     - 0005-Hardlink-KorobovCoeff.c.patch
 
 build:
-  number: 2
+  number: 3
 
 requirements:
   build:
